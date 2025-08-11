@@ -2,5 +2,66 @@
     "name": "chobittoboard",
     "version": "1.0.0",
     "description": "ちょびっとボード - micro:bitでDCモーターとロボットカーを簡単に動かそう！Pin0とPin1で2モーター制御",
-    // ... 【上記で作成したpxt.jsonの全内容をここに貼り付け】
+    {
+    "name": "chobittoboard",
+    "version": "1.0.0",
+    "description": "ちょびっとボード - micro:bitでDCモーターとロボットカーを簡単に動かそう！Pin0とPin1で2モーター制御",
+    "dependencies": {
+        "core": "*",
+        "radio": "*",
+        "microphone": "*"
+    },
+    "files": [
+        "main.ts",
+        "README.md"
+    ],
+    "testFiles": [
+        "test.ts"
+    ],
+    "targetVersions": {
+        "target": "5.0.12",
+        "targetId": "microbit"
+    },
+    "supportedTargets": [
+        "microbit"
+    ],
+    "preferredEditor": "blocksprj",
+    "languageRestriction": "javascript-only",
+    "author": "ちょびっとチーム",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/username/chobittoboard"
+    },
+    "keywords": [
+        "microbit",
+        "motor",
+        "dcmotor",
+        "robotics",
+        "robotcar",
+        "car",
+        "モーター",
+        "DCモーター",
+        "ロボットカー",
+        "ちょびっとボード",
+        "chobittoboard"
+    ],
+    "icon": "./icon.png",
+    "card": {
+        "name": "ちょびっとボード",
+        "description": "micro:bitでDCモーターとロボットカーを簡単に動かそう！",
+        "blocksXml": "<xml xmlns=\"http://www.w3.org/1999/xhtml\"><block type=\"motor_on_off\"></block></xml>",
+        "url": "https://github.com/username/chobittoboard",
+        "imageUrl": "./card.png"
+    },
+    "installedVersion": "workspace:*",
+    "yotta": {
+        "ignoreConflicts": true
+    },
+    "public": true,
+    "additionalFilePath": "./",
+    "additionalFilePaths": [
+        "./README.md"
+    ]
+}
 }
