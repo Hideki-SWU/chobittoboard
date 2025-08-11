@@ -1,0 +1,6 @@
+{
+    "name": "chobittoboard",
+    "version": "1.0.0",
+    "description": "ちょびっとボード - micro:bitでDCモーターとロボットカーを簡単に動かそう！Pin0とPin1で2モーター制御",
+    // ... 【上記で作成したpxt.jsonの全内容をここに貼り付け】
+}
