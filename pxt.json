@@ -1,7 +1,7 @@
 {
-  "name": "chobittoboard",
+  "name": "ちょびっとボード",
   "version": "0.0.2",
-  "description": "ChobittoBoard: control Motor1 on P0 and Motor2 on P1 with PWM speed",
+  "description": "Pin0とPin1に接続したDCモーターを動かします",
   "dependencies": {
     "core": "*"
   },
