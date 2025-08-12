@@ -1,355 +1,277 @@
 /**
- * ちょびっとボード - micro:bit DCモーター制御拡張機能
- * micro:bitでDCモーターを簡単に動かそう！
+ * ちょびっとボード DCモーターテストプログラム
+ * 拡張機能のテスト用プログラム
  */
 
-//% weight=100 color=#FF6600 icon="\uf013" block="ちょびっとボード"
-//% groups=['基本操作', '詳細操作']
-namespace chobittoBoard {
-    
-/**
- * micro:bit Motor Control Extension
- * モーター制御用のMakeCode拡張機能
- */
+// テスト開始の表示
+basic.showString("TEST")
+basic.pause(1000)
 
-//% weight=100 color=#FF6600 icon="\uf013" block="モーター制御"
-//% groups=['基本制御', '詳細制御', 'サーボ制御']
-namespace motorControl {
-    
-    /**
-     * モーターピンの定義
-     */
-    export enum MotorPin {
-        //% block="モーターA (P0)"
-        A = AnalogPin.P0,
-        //% block="モーターB (P1)" 
-        B = AnalogPin.P1,
-        //% block="モーターC (P2)"
-        C = AnalogPin.P2,
-        //% block="モーターD (P8)"
-        D = AnalogPin.P8
-    }
+// ちょびっとボードをはじめる
+chobittoBoard.initMotorControl()
 
-    /**
-     * モーター回転方向の定義
-     */
-    export enum MotorDirection {
-        //% block="正転"
-        Forward = 1,
-        //% block="逆転"
-        Reverse = -1,
-        //% block="停止"
-        Stop = 0
-    }
-
-    /**
-     * モーター状態の定義
-     */
-    export enum MotorState {
-        //% block="オン"
-        On = 1,
-        //% block="オフ"
-        Off = 0
-    }
-
-    // モーター状態を記録する変数
-    let motorStates: { [key: number]: number } = {}
-    let motorSpeeds: { [key: number]: number } = {}
-
-    /**
-     * モーターのオン/オフを制御
-     * @param motor モーターピン
-     * @param state モーター状態（オン/オフ）
-     */
-    //% block="モーター %motor を %state"
-    //% blockId="motor_on_off"
-    //% group="基本制御"
-    //% weight=100
-    export function setMotor(motor: MotorPin, state: MotorState): void {
-        if (state === MotorState.On) {
-            pins.analogWritePin(motor, 1023)
-            motorStates[motor] = 1023
-            basic.showLeds(`
-                . . # . .
-                . # # # .
-                # # # # #
-                . # # # .
-                . . # . .
-                `)
-        } else {
-            pins.analogWritePin(motor, 0)
-            motorStates[motor] = 0
-            basic.showLeds(`
-                # . . . #
-                . # . # .
-                . . # . .
-                . # . # .
-                # . . . #
-                `)
+basic.forever(function () {
+    // Aボタン: 基本的なモーター制御テスト
+    input.onButtonPressed(Button.A, function () {
+        basic.showString("A")
+        
+        // モーターAを段階的に速度アップ
+        for (let speed = 0; speed <= 1023; speed += 200) {
+            chobittoBoard.setMotorSpeed(MotorPin.A, speed)
+            basic.pause(500)
         }
-        basic.pause(500)
-        basic.clearScreen()
-    }
-
-    /**
-     * モーターの速度を設定（0-1023）
-     * @param motor モーターピン
-     * @param speed 速度（0-1023）
-     */
-    //% block="モーター %motor の速度を %speed に設定"
-    //% blockId="motor_speed"
-    //% group="基本制御"
-    //% weight=90
-    //% speed.min=0 speed.max=1023 speed.defl=512
-    export function setMotorSpeed(motor: MotorPin, speed: number): void {
-        // 速度の範囲制限
-        speed = Math.max(0, Math.min(1023, speed))
-        pins.analogWritePin(motor, speed)
-        motorStates[motor] = speed
-        motorSpeeds[motor] = speed
         
-        // 速度レベルを5段階でLEDに表示
-        let level = Math.floor(speed / 205)
-        showSpeedLevel(level)
-        basic.pause(300)
-        basic.clearScreen()
-    }
-
-    /**
-     * モーターの回転方向を制御（双方向モーター用）
-     * @param motorA モーターAピン
-     * @param motorB モーターBピン  
-     * @param direction 回転方向
-     * @param speed 速度（0-1023）
-     */
-    //% block="双方向モーター A:%motorA B:%motorB を %direction 速度 %speed"
-    //% blockId="motor_bidirectional"
-    //% group="詳細制御"
-    //% weight=80
-    //% speed.min=0 speed.max=1023 speed.defl=512
-    export function setBidirectionalMotor(motorA: MotorPin, motorB: MotorPin, direction: MotorDirection, speed: number): void {
-        speed = Math.max(0, Math.min(1023, speed))
-        
-        if (direction === MotorDirection.Forward) {
-            pins.analogWritePin(motorA, speed)
-            pins.analogWritePin(motorB, 0)
-            basic.showArrow(ArrowNames.North)
-        } else if (direction === MotorDirection.Reverse) {
-            pins.analogWritePin(motorA, 0)
-            pins.analogWritePin(motorB, speed)
-            basic.showArrow(ArrowNames.South)
-        } else {
-            pins.analogWritePin(motorA, 0)
-            pins.analogWritePin(motorB, 0)
-            basic.showIcon(IconNames.Square)
-        }
-        basic.pause(300)
-        basic.clearScreen()
-    }
-
-    /**
-     * すべてのモーターを停止
-     */
-    //% block="すべてのモーターを停止"
-    //% blockId="motor_stop_all"
-    //% group="基本制御"
-    //% weight=70
-    export function stopAllMotors(): void {
-        pins.analogWritePin(AnalogPin.P0, 0)
-        pins.analogWritePin(AnalogPin.P1, 0)
-        pins.analogWritePin(AnalogPin.P2, 0)
-        pins.analogWritePin(AnalogPin.P8, 0)
-        
-        // 状態をリセット
-        motorStates = {}
-        motorSpeeds = {}
-        
-        basic.showIcon(IconNames.Square)
-        basic.pause(500)
-        basic.clearScreen()
-    }
-
-    /**
-     * モーターの現在の速度を取得
-     * @param motor モーターピン
-     */
-    //% block="モーター %motor の速度"
-    //% blockId="motor_get_speed"
-    //% group="詳細制御"
-    //% weight=60
-    export function getMotorSpeed(motor: MotorPin): number {
-        return motorSpeeds[motor] || 0
-    }
-
-    /**
-     * モーターが動作中かどうかを確認
-     * @param motor モーターピン
-     */
-    //% block="モーター %motor は動作中"
-    //% blockId="motor_is_running"
-    //% group="詳細制御"
-    //% weight=50
-    export function isMotorRunning(motor: MotorPin): boolean {
-        return (motorStates[motor] || 0) > 0
-    }
-
-    /**
-     * モーターを指定時間動作させる
-     * @param motor モーターピン
-     * @param speed 速度（0-1023）
-     * @param duration 動作時間（ミリ秒）
-     */
-    //% block="モーター %motor を速度 %speed で %duration ms動作"
-    //% blockId="motor_run_duration"
-    //% group="詳細制御"
-    //% weight=40
-    //% speed.min=0 speed.max=1023 speed.defl=512
-    //% duration.min=100 duration.max=10000 duration.defl=1000
-    export function runMotorForDuration(motor: MotorPin, speed: number, duration: number): void {
-        speed = Math.max(0, Math.min(1023, speed))
-        pins.analogWritePin(motor, speed)
-        motorStates[motor] = speed
-        basic.pause(duration)
-        pins.analogWritePin(motor, 0)
-        motorStates[motor] = 0
-    }
-
-    /**
-     * PWM周波数を設定
-     * @param motor モーターピン
-     * @param frequency 周波数（Hz）
-     */
-    //% block="モーター %motor のPWM周波数を %frequency Hz に設定"
-    //% blockId="motor_set_pwm_frequency"
-    //% group="詳細制御"
-    //% weight=30
-    //% frequency.min=1 frequency.max=40000 frequency.defl=1000
-    export function setPWMFrequency(motor: MotorPin, frequency: number): void {
-        pins.analogSetPwmPin(motor)
-        pins.analogSetPeriod(motor, Math.floor(1000000 / frequency))
-    }
-
-    /**
-     * サーボモーターの角度を設定
-     * @param servo サーボピン
-     * @param angle 角度（0-180度）
-     */
-    //% block="サーボ %servo を %angle 度に設定"
-    //% blockId="servo_set_angle"
-    //% group="サーボ制御"
-    //% weight=20
-    //% angle.min=0 angle.max=180 angle.defl=90
-    export function setServoAngle(servo: MotorPin, angle: number): void {
-        angle = Math.max(0, Math.min(180, angle))
-        pins.servoWritePin(servo, angle)
-        
-        // 角度に応じたLED表示
-        if (angle < 45) {
-            basic.showArrow(ArrowNames.West)
-        } else if (angle < 135) {
-            basic.showArrow(ArrowNames.North)
-        } else {
-            basic.showArrow(ArrowNames.East)
-        }
-        basic.pause(300)
-        basic.clearScreen()
-    }
-
-    /**
-     * 連続回転サーボの制御
-     * @param servo サーボピン
-     * @param speed 速度（-100から100、0は停止）
-     */
-    //% block="連続回転サーボ %servo を速度 %speed で回転"
-    //% blockId="continuous_servo"
-    //% group="サーボ制御"
-    //% weight=10
-    //% speed.min=-100 speed.max=100 speed.defl=0
-    export function setContinuousServo(servo: MotorPin, speed: number): void {
-        speed = Math.max(-100, Math.min(100, speed))
-        
-        // 速度を角度に変換（90度が停止、0-180度の範囲）
-        let angle = 90 + (speed * 90 / 100)
-        pins.servoWritePin(servo, angle)
-        
-        if (speed > 0) {
-            basic.showArrow(ArrowNames.East)
-        } else if (speed < 0) {
-            basic.showArrow(ArrowNames.West)
-        } else {
-            basic.showIcon(IconNames.SmallSquare)
-        }
-        basic.pause(300)
-        basic.clearScreen()
-    }
-
-    /**
-     * 速度レベルをLEDで表示する内部関数
-     */
-    function showSpeedLevel(level: number): void {
-        if (level <= 0) {
-            basic.showLeds(`
-                . . . . .
-                . . . . .
-                . . . . .
-                . . . . .
-                . . . . .
-                `)
-        } else if (level == 1) {
-            basic.showLeds(`
-                . . . . .
-                . . . . .
-                . . . . .
-                . . . . .
-                # # # # #
-                `)
-        } else if (level == 2) {
-            basic.showLeds(`
-                . . . . .
-                . . . . .
-                . . . . .
-                # # # # #
-                # # # # #
-                `)
-        } else if (level == 3) {
-            basic.showLeds(`
-                . . . . .
-                . . . . .
-                # # # # #
-                # # # # #
-                # # # # #
-                `)
-        } else if (level == 4) {
-            basic.showLeds(`
-                . . . . .
-                # # # # #
-                # # # # #
-                # # # # #
-                # # # # #
-                `)
-        } else {
-            basic.showLeds(`
-                # # # # #
-                # # # # #
-                # # # # #
-                # # # # #
-                # # # # #
-                `)
-        }
-    }
-
-    /**
-     * 初期化処理
-     */
-    //% block="モーター制御を初期化"
-    //% blockId="motor_init"
-    //% group="基本制御"
-    //% weight=110
-    export function initMotorControl(): void {
-        stopAllMotors()
-        basic.showIcon(IconNames.Happy)
+        // モーターを停止
+        chobittoBoard.setMotor(MotorPin.A, MotorState.Off)
+        basic.showIcon(IconNames.Yes)
         basic.pause(1000)
         basic.clearScreen()
+    })
+
+    // Bボタン: 両方のモーター制御テスト
+    input.onButtonPressed(Button.B, function () {
+        basic.showString("B")
+        
+        // 両方のモーターを順番にテスト
+        let motors = [MotorPin.A, MotorPin.B]
+        
+        for (let motor of motors) {
+            chobittoBoard.setMotorSpeed(motor, 800)
+            basic.pause(1000)
+            chobittoBoard.setMotor(motor, MotorState.Off)
+            basic.pause(500)
+        }
+        
+        basic.showIcon(IconNames.Yes)
+        basic.pause(1000)
+        basic.clearScreen()
+    })
+
+    // A+Bボタン: ロボットカー動作テスト
+    input.onButtonPressed(Button.AB, function () {
+        basic.showString("AB")
+        
+        // 前進テスト
+        chobittoBoard.setBothMotors(MotorDirection.Forward, 600)
+        basic.pause(2000)
+        
+        // 停止
+        chobittoBoard.setBothMotors(MotorDirection.Stop, 0)
+        basic.pause(1000)
+        
+        // 左右個別制御テスト（右カーブ）
+        chobittoBoard.setLeftRightMotors(800, 400)
+        basic.pause(2000)
+        
+        // 停止
+        chobittoBoard.stopAllMotors()
+        
+        basic.showIcon(IconNames.Yes)
+        basic.pause(1000)
+        basic.clearScreen()
+    })
+
+    // 傾きセンサーでロボットカー制御テスト
+    if (input.isGesture(Gesture.TiltLeft)) {
+        // 左カーブ
+        chobittoBoard.setLeftRightMotors(400, 800)
+        basic.showArrow(ArrowNames.West)
+    } else if (input.isGesture(Gesture.TiltRight)) {
+        // 右カーブ
+        chobittoBoard.setLeftRightMotors(800, 400)
+        basic.showArrow(ArrowNames.East)
+    } else if (input.isGesture(Gesture.LogoUp)) {
+        // 前進
+        chobittoBoard.setBothMotors(MotorDirection.Forward, 800)
+        basic.showArrow(ArrowNames.North)
+    } else if (input.isGesture(Gesture.LogoDown)) {
+        // 後退
+        chobittoBoard.setBothMotors(MotorDirection.Reverse, 800)
+        basic.showArrow(ArrowNames.South)
+    } else if (input.isGesture(Gesture.Shake)) {
+        // 停止
+        chobittoBoard.stopAllMotors()
+        basic.showIcon(IconNames.Square)
     }
+
+    basic.pause(100)
+})
+
+// 温度センサーでファン制御テスト
+basic.forever(function () {
+    let temperature = input.temperature()
+    
+    if (temperature > 22) {
+        // 温度が22度以上の場合、ファンを動作
+        let fanSpeed = (temperature - 22) * 100
+        fanSpeed = Math.min(fanSpeed, 1023)  // 最大速度制限
+        
+        chobittoBoard.setMotorSpeed(MotorPin.A, fanSpeed)
+        
+        // 温度を表示
+        if (temperature % 5 == 0) {  // 5秒おきに表示
+            basic.showNumber(temperature)
+            basic.pause(1000)
+            basic.clearScreen()
+        }
+    } else {
+        // 温度が低い場合、ファンを停止
+        chobittoBoard.setMotor(MotorPin.A, MotorState.Off)
+    }
+    
+    basic.pause(1000)
+})
+
+// 光センサーで速度制御テスト
+basic.forever(function () {
+    let lightLevel = input.lightLevel()
+    
+    // 光の強さに応じてモーター速度を調整（Pin1のモーター）
+    let speed = Math.map(lightLevel, 0, 255, 0, 1023)
+    
+    if (lightLevel > 50) {  // 明るい場合のみ動作
+        chobittoBoard.setMotorSpeed(MotorPin.B, speed)
+        
+        // 光レベルを5段階で表示
+        if (lightLevel % 10 == 0) {
+            let level = Math.floor(lightLevel / 51)  // 0-4の範囲
+            basic.showNumber(level)
+            basic.pause(500)
+            basic.clearScreen()
+        }
+    } else {
+        chobittoBoard.setMotor(MotorPin.B, MotorState.Off)
+    }
+    
+    basic.pause(200)
+})
+
+// PWM周波数テスト
+input.onPinPressed(TouchPin.P0, function () {
+    basic.showString("PWM")
+    
+    // 異なる周波数でモーターをテスト
+    let frequencies = [100, 500, 1000, 2000, 5000]
+    
+    for (let freq of frequencies) {
+        chobittoBoard.setPWMFrequency(MotorPin.A, freq)
+        chobittoBoard.setMotorSpeed(MotorPin.A, 512)
+        basic.showNumber(freq)
+        basic.pause(2000)
+        chobittoBoard.setMotor(MotorPin.A, MotorState.Off)
+        basic.pause(500)
+    }
+    
+    basic.showIcon(IconNames.Yes)
+    basic.pause(1000)
+    basic.clearScreen()
+})
+
+// 指定時間動作テスト
+input.onPinPressed(TouchPin.P1, function () {
+    basic.showString("TIME")
+    
+    // 3秒間モーターを動作させる
+    chobittoBoard.runMotorForDuration(MotorPin.A, 800, 3000)
+    
+    basic.showIcon(IconNames.Yes)
+    basic.pause(1000)
+    basic.clearScreen()
+})
+
+// 両方のモーター時間動作テスト
+input.onPinPressed(TouchPin.P2, function () {
+    basic.showString("BOTH")
+    
+    // 両方のモーターを2秒間動作
+    chobittoBoard.runBothMotorsForDuration(700, 700, 2000)
+    
+    basic.showIcon(IconNames.Yes)
+    basic.pause(1000)
+    basic.clearScreen()
+})
+
+// ロボットカーの基本動作テスト
+input.onLogoEvent(TouchButtonEvent.Pressed, function () {
+    basic.showString("CAR")
+    
+    // 前進
+    chobittoBoard.setBothMotors(MotorDirection.Forward, 600)
+    basic.pause(2000)
+    
+    // 右カーブ
+    chobittoBoard.setLeftRightMotors(800, 400)
+    basic.pause(1000)
+    
+    // 左カーブ
+    chobittoBoard.setLeftRightMotors(400, 800)
+    basic.pause(1000)
+    
+    // 後退
+    chobittoBoard.setBothMotors(MotorDirection.Reverse, 600)
+    basic.pause(1000)
+    
+    // 停止
+    chobittoBoard.stopAllMotors()
+    
+    basic.showIcon(IconNames.Yes)
+    basic.pause(1000)
+    basic.clearScreen()
+})
+
+// エラーハンドリングテスト
+function testErrorHandling() {
+    basic.showString("ERR")
+    
+    // 範囲外の値でテスト（自動的に制限される）
+    chobittoBoard.setMotorSpeed(MotorPin.A, 2000)  // 1023に制限される
+    basic.pause(1000)
+    
+    chobittoBoard.setMotorSpeed(MotorPin.A, -100)  // 0に制限される
+    basic.pause(1000)
+    
+    chobittoBoard.setLeftRightMotors(1500, -200)   // 範囲内に制限される
+    basic.pause(1000)
+    
+    chobittoBoard.stopAllMotors()
+    
+    basic.showIcon(IconNames.Yes)
+    basic.pause(1000)
+    basic.clearScreen()
 }
+
+// モーター状態取得テスト
+function testMotorStatus() {
+    basic.showString("STATUS")
+    
+    // モーターAを動作
+    chobittoBoard.setMotorSpeed(MotorPin.A, 500)
+    
+    // 状態確認
+    if (chobittoBoard.isMotorRunning(MotorPin.A)) {
+        basic.showIcon(IconNames.Yes)
+        let speed = chobittoBoard.getMotorSpeed(MotorPin.A)
+        basic.showNumber(speed)
+    }
+    
+    basic.pause(2000)
+    chobittoBoard.stopAllMotors()
+    
+    // 停止状態確認
+    if (!chobittoBoard.isMotorRunning(MotorPin.A)) {
+        basic.showIcon(IconNames.No)
+    }
+    
+    basic.pause(1000)
+    basic.clearScreen()
 }
+
+// 起動時にテストを順次実行
+basic.pause(3000)  // 他の処理が落ち着いてから実行
+testErrorHandling()
+basic.pause(1000)
+testMotorStatus()
+
+// テスト完了メッセージ
+basic.showString("READY")
+basic.clearScreen()
