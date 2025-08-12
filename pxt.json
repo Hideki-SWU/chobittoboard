@@ -1,11 +1,7 @@
 {
     "name": "chobittoboard",
     "version": "1.0.0",
-    "description": "ちょびっとボード - micro:bitでDCモーターとロボットカーを簡単に動かそう！Pin0とPin1で2モーター制御",
-    {
-    "name": "chobittoboard",
-    "version": "1.0.0",
-    "description": "ちょびっとボード - micro:bitでDCモーターとロボットカーを簡単に動かそう！Pin0とPin1で2モーター制御",
+    "description": "ちょびっとボード - micro:bitでDCモーターを簡単に動かそう！Pin0とPin1で2モーター制御",
     "dependencies": {
         "core": "*",
         "radio": "*",
@@ -27,7 +23,7 @@
     ],
     "preferredEditor": "blocksprj",
     "languageRestriction": "javascript-only",
-    "author": "ちょびっとチーム",
+    "author": "ちょびっとボード開発チーム",
     "license": "MIT",
     "repository": {
         "type": "git",
@@ -49,7 +45,7 @@
     "icon": "./icon.png",
     "card": {
         "name": "ちょびっとボード",
-        "description": "micro:bitでDCモーターとロボットカーを簡単に動かそう！",
+        "description": "micro:bitでDCモーターを簡単に動かそう！",
         "blocksXml": "<xml xmlns=\"http://www.w3.org/1999/xhtml\"><block type=\"motor_on_off\"></block></xml>",
         "url": "https://github.com/username/chobittoboard",
         "imageUrl": "./card.png"
@@ -63,5 +59,4 @@
     "additionalFilePaths": [
         "./README.md"
     ]
-}
 }
