@@ -1,7 +1,7 @@
 {
-  "name": "ちょびっとボード",
-  "version": "0.0.2",
-  "description": "Pin0とPin1に接続したDCモーターを動かします",
+  "name": "chobittoboard",
+  "version": "0.0.3",
+  "description": "ちょびっとボード: モーター1(P0)・モーター2(P1)をPWM制御",
   "dependencies": {
     "core": "*"
   },
@@ -9,5 +9,6 @@
     "main.ts",
     "README.md"
   ],
+  "icon": "icon.png",
   "public": true
 }
