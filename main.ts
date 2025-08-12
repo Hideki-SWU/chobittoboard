@@ -1,8 +1,8 @@
 /**
- * ChobittoBoard: モーター1(P0)・モーター2(P1)をPWM制御（片方向）
+ * ちょびっとボード: モーター1(P0)・モーター2(P1)をPWM制御（片方向）
  */
 //% color="#ff6600" icon="\uf085" block="ちょびっとボード"
-namespace ちょびっとボード {
+namespace chobittoboard {
 
     // 0–100% → 0–1023 に変換
     function pctToDuty(pct: number): number {
@@ -14,18 +14,18 @@ namespace ちょびっとボード {
     // ===== モーター1 (P0) =====
 
     /**
-     * モーター1（P0）をON（現在の速度%で）
+     * モーター1（P0）をオン（現在の速度%で）
      */
-    //% block="モーター1 ON"
+    //% block="モーター1 オン"
     //% weight=95
     export function motor1On(): void {
         pins.analogWritePin(AnalogPin.P0, 1023)
     }
 
     /**
-     * モーター1（P0）をOFF
+     * モーター1（P0）をオフ
      */
-    //% block="モーター1 OFF"
+    //% block="モーター1 オフ"
     //% weight=90
     export function motor1Off(): void {
         pins.analogWritePin(AnalogPin.P0, 0)
@@ -57,18 +57,18 @@ namespace ちょびっとボード {
     // ===== モーター2 (P1) =====
 
     /**
-     * モーター2（P1）をON（現在の速度%で）
+     * モーター2（P1）をオン（現在の速度%で）
      */
-    //% block="モーター2 ON"
+    //% block="モーター2 オン"
     //% weight=75
     export function motor2On(): void {
         pins.analogWritePin(AnalogPin.P1, 1023)
     }
 
     /**
-     * モーター2（P1）をOFF
+     * モーター2（P1）をオフ
      */
-    //% block="モーター2 OFF"
+    //% block="モーター2 オフ"
     //% weight=70
     export function motor2Off(): void {
         pins.analogWritePin(AnalogPin.P1, 0)
