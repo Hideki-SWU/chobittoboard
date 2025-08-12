@@ -1,8 +1,8 @@
 /**
  * ChobittoBoard: モーター1(P0)・モーター2(P1)をPWM制御（片方向）
  */
-//% color="#ff6600" icon="\uf085" block="chobittoboard"
-namespace chobittoboard {
+//% color="#ff6600" icon="\uf085" block="ちょびっとボード"
+namespace ちょびっとボード {
 
     // 0–100% → 0–1023 に変換
     function pctToDuty(pct: number): number {
